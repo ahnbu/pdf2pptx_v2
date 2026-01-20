@@ -45,32 +45,34 @@ const cropImageFromSlide = async (
     });
 };
 
-export const generatePptxFile = async (slidesData: SlideData[]): Promise<void> => {
+// Define the return type for the generation process
+export interface GenerationResult {
+    pptxBase64: string;
+    images: { name: string; data: string }[];
+}
+
+export const generatePptxFile = async (slidesData: SlideData[]): Promise<GenerationResult> => {
   const pptx = new PptxGenJS();
+  const collectedImages: { name: string; data: string }[] = [];
   
-  // Set basic layout (16:9 is standard)
   pptx.layout = "LAYOUT_16x9";
-  
-  // Define standard 16:9 slide dimensions in inches
   const PRES_WIDTH = 10.0;
   const PRES_HEIGHT = 5.625;
 
-  // Use a for...of loop to handle async image processing sequentially
-  for (const slideData of slidesData) {
+  for (let i = 0; i < slidesData.length; i++) {
+    const slideData = slidesData[i];
     const slide = pptx.addSlide();
     
-    // Set background
     slide.background = { color: slideData.backgroundColor.replace('#', '') };
 
-    for (const el of slideData.elements) {
-      // Convert percentage coordinates to inches (numbers) to satisfy strict type definitions
+    for (let j = 0; j < slideData.elements.length; j++) {
+      const el = slideData.elements[j];
       const x = (el.x / 100) * PRES_WIDTH;
       const y = (el.y / 100) * PRES_HEIGHT;
       const w = (el.w / 100) * PRES_WIDTH;
       const h = (el.h / 100) * PRES_HEIGHT;
 
       if (el.type === ElementType.Shape) {
-        // Map shape types
         let shapeType = pptx.ShapeType.rect;
         if (el.shapeType === 'ellipse') shapeType = pptx.ShapeType.ellipse;
         if (el.shapeType === 'line') shapeType = pptx.ShapeType.line;
@@ -78,10 +80,9 @@ export const generatePptxFile = async (slidesData: SlideData[]): Promise<void> =
         slide.addShape(shapeType, {
           x, y, w, h,
           fill: { color: el.bgColor ? el.bgColor.replace('#', '') : 'CCCCCC' },
-          line: { width: 0 }, // Ensure no border by setting width to 0
+          line: { width: 0 },
         });
       } else if (el.type === ElementType.Text && el.content) {
-        // Use estimated font size to maintain original look as much as possible
         const fontSize = el.fontSize || 14;
 
         slide.addText(el.content, {
@@ -92,21 +93,24 @@ export const generatePptxFile = async (slidesData: SlideData[]): Promise<void> =
           bold: el.bold || false,
           fontFace: "Noto Sans KR", 
           wrap: true,
-          // Removed line property entirely to avoid default borders
         });
       } else if (el.type === ElementType.Image) {
-        // For images identified by AI, we crop them from the original slide
         if (slideData.originalImageBase64) {
             try {
                 let imagePayload = `data:image/jpeg;base64,${slideData.originalImageBase64}`;
+                let rawBase64 = slideData.originalImageBase64;
                 
                 if (el.w < 95 || el.h < 95) {
-                   const croppedBase64 = await cropImageFromSlide(
+                   const croppedDataUrl = await cropImageFromSlide(
                        slideData.originalImageBase64,
                        el.x, el.y, el.w, el.h
                    );
-                   imagePayload = croppedBase64;
+                   imagePayload = croppedDataUrl;
+                   rawBase64 = croppedDataUrl.split(',')[1];
                 }
+
+                const imageName = `slide_${i+1}_el_${j+1}.jpg`;
+                collectedImages.push({ name: imageName, data: rawBase64 });
 
                 slide.addImage({
                     data: imagePayload,
@@ -120,5 +124,11 @@ export const generatePptxFile = async (slidesData: SlideData[]): Promise<void> =
     }
   }
 
-  await pptx.writeFile({ fileName: "Converted_Presentation.pptx" });
+  // Get base64 string of the PPTX file
+  const pptxBase64 = await pptx.write({ outputType: "base64" }) as string;
+  
+  return {
+    pptxBase64,
+    images: collectedImages
+  };
 };

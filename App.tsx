@@ -86,20 +86,47 @@ function App() {
   const handleGeneratePptx = async () => {
       try {
           setState(prev => ({ ...prev, isProcessing: true, currentStep: 'pptx-gen', progress: 95 }));
-          await generatePptxFile(state.slidesData);
+          
+          // Generate PPTX and collect images
+          const result = await generatePptxFile(state.slidesData);
+          
+          // Prepare folder name: result_mmdd_hhmm
+          const now = new Date();
+          const mm = String(now.getMonth() + 1).padStart(2, '0');
+          const dd = String(now.getDate()).padStart(2, '0');
+          const hh = String(now.getHours()).padStart(2, '0');
+          const min = String(now.getMinutes()).padStart(2, '0');
+          const folderName = `result_${mm}${dd}_${hh}${min}`;
+
+          // Send to local save server
+          const response = await fetch('http://localhost:3005/api/save', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                  folderName,
+                  originalFileName: state.file?.name,
+                  pptxBase64: result.pptxBase64,
+                  analysisJson: state.slidesData,
+                  images: result.images
+              }),
+          });
+
+          const saveResult = await response.json();
+          if (!saveResult.success) throw new Error(saveResult.error);
           
           setState(prev => ({ 
             ...prev, 
             currentStep: 'done', 
             isProcessing: false, 
-            progress: 100 
+            progress: 100,
+            generatedFileName: `${folderName} (Saved to output folder)`
           }));
       } catch (err: any) {
         console.error(err);
         setState(prev => ({ 
             ...prev, 
             isProcessing: false, 
-            error: err.message || "Failed to generate PPTX file.",
+            error: err.message || "Failed to generate or save PPTX file. (Make sure the save server is running)",
         }));
       }
   };
@@ -236,7 +263,7 @@ function App() {
 
         {/* Footer info */}
         <div className="mt-12 text-center text-sm text-slate-400">
-           <p>Powered by Gemini 2.0 & PPTXGenJS</p>
+           <p>Powered by Gemini 3.0 flash & PPTXGenJS</p>
         </div>
       </div>
     </div>

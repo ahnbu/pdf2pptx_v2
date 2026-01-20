@@ -33,12 +33,13 @@ export const convertPdfToImages = async (file: File): Promise<string[]> => {
       const renderContext = {
         canvasContext: context,
         viewport: viewport,
+        canvas: canvas,
       };
 
       await page.render(renderContext).promise;
       
-      // Export to JPEG to save size while maintaining quality for AI
-      const base64 = canvas.toDataURL('image/jpeg', 0.8);
+      // Export to WebP to save size and improve transfer speed for AI analysis
+      const base64 = canvas.toDataURL('image/webp', 0.8);
       // Remove data prefix for Gemini API
       images.push(base64.split(',')[1]); 
     }

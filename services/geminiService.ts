@@ -75,7 +75,8 @@ export const analyzeSlideWithGemini = async (
         parts: [
           {
             inlineData: {
-              mimeType: 'image/jpeg',
+              mimeType: 'image/webp',
+              // mimeType: 'image/jpeg',
               data: base64Image
             }
           },

@@ -5,20 +5,30 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "server": "node server.js",
+    "start": "concurrently \"npm run dev\" \"npm run server\"",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@google/genai": "^1.37.0",
-    "pdfjs-dist": "^5.4.530",
     "lucide-react": "^0.562.0",
+    "pdfjs-dist": "^5.4.530",
+    "pptxgenjs": "^4.0.1",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3",
-    "pptxgenjs": "^4.0.1"
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.14.0",
     "@vitejs/plugin-react": "^5.0.0",
+    "body-parser": "^2.2.2",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
+    "fs-extra": "^11.3.3",
     "typescript": "~5.8.2",
     "vite": "^6.2.0"
   }
