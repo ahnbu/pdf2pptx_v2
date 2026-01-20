@@ -1,0 +1,5 @@
+{
+  "name": "CUP PDF to PPTX ver 1.0",
+  "description": "Convert PDF slides into fully editable PowerPoint presentations using AI to separate text and shapes.",
+  "requestFramePermissions": []
+}
