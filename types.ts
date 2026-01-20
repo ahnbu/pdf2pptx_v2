@@ -42,4 +42,6 @@ export interface AppState {
   error: string | null;
   generatedFileName: string | null;
   slidesData: SlideData[];
+  batchSize: number;
+  processingSlides: number[];
 }

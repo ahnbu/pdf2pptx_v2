@@ -18,6 +18,8 @@ const INITIAL_STATE: AppState = {
   error: null,
   generatedFileName: null,
   slidesData: [],
+  batchSize: 3,
+  processingSlides: [],
 };
 
 function App() {
@@ -44,20 +46,39 @@ function App() {
         progress: 10 
       }));
 
-      // 2. AI Analysis Loop
+      // 2. AI Analysis Loop with Batch Processing
       const newSlidesData: SlideData[] = [];
       
-      for (let i = 0; i < totalSlides; i++) {
-        const slideData = await analyzeSlideWithGemini(images[i], i);
-        newSlidesData.push(slideData);
+      for (let i = 0; i < totalSlides; i += state.batchSize) {
+        const batchIndices = Array.from(
+          { length: Math.min(state.batchSize, totalSlides - i) }, 
+          (_, k) => i + k
+        );
         
-        const progressPercent = 10 + ((i + 1) / totalSlides) * 80; // 10% to 90%
+        setState(prev => ({ 
+          ...prev, 
+          processingSlides: batchIndices 
+        }));
+
+        const batchResults = await Promise.all(
+          batchIndices.map(idx => analyzeSlideWithGemini(images[idx], idx))
+        );
+        
+        newSlidesData.push(...batchResults);
+        
+        const lastProcessedIdx = Math.min(i + state.batchSize, totalSlides);
+        const progressPercent = 10 + (lastProcessedIdx / totalSlides) * 80;
+        
         setState(prev => ({ 
             ...prev, 
-            processedSlides: i + 1, 
-            progress: progressPercent 
+            processedSlides: lastProcessedIdx, 
+            progress: progressPercent,
+            processingSlides: []
         }));
       }
+
+      // Sort results by index to ensure correct order
+      newSlidesData.sort((a, b) => (a.index || 0) - (b.index || 0));
 
       // 3. STOP - Go to Preview Mode instead of generating immediately
       setState(prev => ({ 
@@ -114,12 +135,29 @@ function App() {
           const saveResult = await response.json();
           if (!saveResult.success) throw new Error(saveResult.error);
           
+          // Browser Download
+          const byteCharacters = atob(result.pptxBase64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+              byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${folderName}.pptx`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+
           setState(prev => ({ 
             ...prev, 
             currentStep: 'done', 
             isProcessing: false, 
             progress: 100,
-            generatedFileName: `${folderName} (output 폴더에 저장됨)`
+            generatedFileName: `${folderName} (다운로드 완료)`
           }));
       } catch (err: any) {
         console.error(err);
@@ -174,12 +212,32 @@ function App() {
                       <p className="text-sm text-slate-400">{(state.file.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
                   </div>
-                  <button
-                    onClick={startConversion}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center shadow-md hover:shadow-lg"
-                  >
-                    PPTX로 변환하기
-                  </button>
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex items-center space-x-3 text-sm">
+                      <span className="text-slate-400">동시 처리 설정:</span>
+                      <div className="flex bg-slate-700/50 p-1 rounded-lg">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <button
+                            key={n}
+                            onClick={() => setState(prev => ({ ...prev, batchSize: n }))}
+                            className={`px-3 py-1 rounded-md transition-all ${
+                              state.batchSize === n 
+                                ? 'bg-indigo-600 text-white shadow-sm' 
+                                : 'text-slate-400 hover:text-slate-200'
+                            }`}
+                          >
+                            {n}장
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <button
+                      onClick={startConversion}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center shadow-md hover:shadow-lg w-full"
+                    >
+                      PPTX로 변환하기
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -193,6 +251,7 @@ function App() {
                     progress={state.progress}
                     totalSlides={state.totalSlides}
                     processedSlides={state.processedSlides}
+                    processingSlides={state.processingSlides}
                 />
             </div>
           )}
@@ -217,6 +276,7 @@ function App() {
                     progress={state.progress}
                     totalSlides={state.totalSlides}
                     processedSlides={state.processedSlides}
+                    processingSlides={state.processingSlides}
                 />
                </div>
           )}

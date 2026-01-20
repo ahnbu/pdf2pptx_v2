@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { CheckCircle2, Circle, Loader2 } from 'lucide-react';
 import { ProcessStep } from '../types';
 
@@ -7,6 +7,7 @@ interface ProcessingStatusProps {
   progress: number;
   totalSlides: number;
   processedSlides: number;
+  processingSlides?: number[];
 }
 
 const steps: { id: string; label: string }[] = [
@@ -20,7 +21,22 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
   progress,
   totalSlides,
   processedSlides,
+  processingSlides = [],
 }) => {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setSeconds(prev => prev + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatTime = (s: number) => {
+    const mins = Math.floor(s / 60);
+    const secs = s % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
   return (
     <div className="w-full max-w-lg mx-auto bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-6">
       <h3 className="text-lg font-semibold text-slate-100 mb-6">프레젠테이션 변환 중</h3>
@@ -46,9 +62,16 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
                             {step.label}
                         </p>
                         {isActive && step.id === 'ai-analysis' && (
-                            <p className="text-xs text-slate-400 mt-1">
-                                슬라이드 {processedSlides} / {totalSlides} 처리 중...
-                            </p>
+                            <div className="mt-1">
+                                <p className="text-xs text-slate-400">
+                                    슬라이드 {processedSlides} / {totalSlides} 완료
+                                </p>
+                                {processingSlides.length > 0 && (
+                                    <p className="text-xs text-indigo-400 font-medium animate-pulse">
+                                        현재 처리 중: {processingSlides.map(s => s + 1).join(', ')}번 슬라이드
+                                    </p>
+                                )}
+                            </div>
                         )}
                     </div>
                 </div>
@@ -58,7 +81,10 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
 
       <div className="mt-8">
         <div className="flex justify-between text-xs text-slate-400 mb-2">
-            <span>전체 진행률</span>
+            <div className="flex items-center space-x-2">
+                <span>전체 진행률</span>
+                <span className="text-slate-500 font-mono">({formatTime(seconds)})</span>
+            </div>
             <span>{Math.round(progress)}%</span>
         </div>
         <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
