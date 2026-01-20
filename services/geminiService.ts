@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, MediaResolution } from "@google/genai";
 import { SlideData, ElementType } from "../types";
 
 const SYSTEM_INSTRUCTION = `
@@ -88,7 +88,8 @@ export const analyzeSlideWithGemini = async (
         responseMimeType: "application/json",
         responseSchema: responseSchema,
         systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.0 // Reduced to 0 for maximum determinism and adherence to spatial facts
+        temperature: 0.0, // Reduced to 0 for maximum determinism and adherence to spatial facts
+        mediaResolution: MediaResolution.MEDIA_RESOLUTION_HIGH, // Set to medium for better image quality
       }
     });
 
