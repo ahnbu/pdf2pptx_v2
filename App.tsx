@@ -119,21 +119,26 @@ function App() {
           const min = String(now.getMinutes()).padStart(2, '0');
           const folderName = `result_${mm}${dd}_${hh}${min}`;
 
-          // Send to local save server
-          const response = await fetch('http://localhost:3005/api/save', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                  folderName,
-                  originalFileName: state.file?.name,
-                  pptxBase64: result.pptxBase64,
-                  analysisJson: state.slidesData,
-                  images: result.images
-              }),
-          });
-
-          const saveResult = await response.json();
-          if (!saveResult.success) throw new Error(saveResult.error);
+          // Send to local save server (Only in local environment)
+          if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+              try {
+                  const response = await fetch('http://localhost:3005/api/save', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                          folderName,
+                          originalFileName: state.file?.name,
+                          pptxBase64: result.pptxBase64,
+                          analysisJson: state.slidesData,
+                          images: result.images
+                      }),
+                  });
+                  const saveResult = await response.json();
+                  if (!saveResult.success) console.warn("서버 저장 실패:", saveResult.error);
+              } catch (e) {
+                  console.warn("로컬 저장 서버에 연결할 수 없습니다. 브라우저 다운로드만 수행합니다.");
+              }
+          }
           
           // Browser Download
           const byteCharacters = atob(result.pptxBase64);
