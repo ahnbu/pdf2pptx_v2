@@ -72,12 +72,12 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col h-[800px]">
+    <div className="bg-slate-800 rounded-xl shadow-sm border border-slate-700 overflow-hidden flex flex-col h-[800px]">
       {/* Header */}
-      <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+      <div className="p-4 border-b border-slate-700 flex justify-between items-center bg-slate-850">
         <div>
-          <h2 className="text-lg font-semibold text-slate-800">Preview & Edit Slides</h2>
-          <p className="text-sm text-slate-500">Select elements on the image or list to edit</p>
+          <h2 className="text-lg font-semibold text-slate-100">슬라이드 미리보기 및 편집</h2>
+          <p className="text-sm text-slate-400">이미지나 목록에서 요소를 선택하여 편집하세요</p>
         </div>
         <button
           onClick={onGenerate}
@@ -85,11 +85,11 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
           className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-colors flex items-center space-x-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isGenerating ? (
-            <span>Generating...</span>
+            <span>생성 중...</span>
           ) : (
             <>
               <Download className="w-4 h-4" />
-              <span>Generate PPTX</span>
+              <span>PPTX 생성</span>
             </>
           )}
         </button>
@@ -97,16 +97,16 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Slide Thumbnails */}
-        <div className="w-40 bg-slate-50 border-r border-slate-200 overflow-y-auto p-4 space-y-4">
+        <div className="w-40 bg-slate-850 border-r border-slate-700 overflow-y-auto p-4 space-y-4">
           {slides.map((slide, idx) => (
             <div 
               key={idx}
               onClick={() => setCurrentIndex(idx)}
               className={`cursor-pointer transition-all duration-200 rounded-lg overflow-hidden border-2 ${
-                idx === currentIndex ? 'border-indigo-600 ring-2 ring-indigo-100' : 'border-slate-200 hover:border-slate-300'
+                idx === currentIndex ? 'border-indigo-600 ring-2 ring-indigo-500' : 'border-slate-600 hover:border-slate-500'
               }`}
             >
-              <div className="aspect-video bg-white relative">
+              <div className="aspect-video bg-slate-900 relative">
                 <img 
                   src={`data:image/jpeg;base64,${slide.originalImageBase64}`} 
                   alt={`Slide ${idx + 1}`}
@@ -124,10 +124,10 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
         <div className="flex-1 flex overflow-hidden">
           
           {/* Left: Original Reference with Interactive Overlays */}
-          <div className="flex-1 bg-slate-100 p-8 overflow-y-auto flex items-center justify-center">
-            <div className="w-full max-w-4xl shadow-xl rounded-lg overflow-hidden bg-white relative">
+          <div className="flex-1 bg-slate-900 p-8 overflow-y-auto flex items-center justify-center">
+            <div className="w-full max-w-4xl shadow-xl rounded-lg overflow-hidden bg-slate-950 relative">
                 <div className="bg-slate-800 text-white text-xs px-3 py-1 flex justify-between items-center">
-                    <span>Original Slide - Click elements to select</span>
+                    <span>원본 슬라이드 - 요소를 클릭하여 선택</span>
                     <span>{currentIndex + 1} / {slides.length}</span>
                 </div>
                 
@@ -149,7 +149,7 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
                                     e.stopPropagation();
                                     setSelectedElementIndex(idx);
                                 }}
-                                title={`${el.type} - Click to edit`}
+                                title={`${el.type} - 편집하려면 클릭`}
                                 className={`absolute transition-all duration-200 cursor-pointer group ${
                                     isSelected 
                                     ? 'border-2 border-red-500 bg-red-500/10 z-20' 
@@ -176,10 +176,10 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
           </div>
 
           {/* Right: Parsed Elements Editor */}
-          <div className="w-80 bg-white border-l border-slate-200 overflow-y-auto flex flex-col">
-            <div className="p-4 border-b border-slate-100 sticky top-0 bg-white z-30 shadow-sm">
-              <h3 className="font-semibold text-slate-700 flex items-center justify-between">
-                <span>Elements</span>
+          <div className="w-80 bg-slate-800 border-l border-slate-700 overflow-y-auto flex flex-col">
+            <div className="p-4 border-b border-slate-700 sticky top-0 bg-slate-800 z-30 shadow-sm">
+              <h3 className="font-semibold text-slate-200 flex items-center justify-between">
+                <span>요소</span>
                 <span className="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full text-xs">
                     {currentSlide.elements.length}
                 </span>
@@ -196,12 +196,12 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
                         onClick={() => setSelectedElementIndex(idx)}
                         className={`border rounded-lg p-3 transition-all duration-200 cursor-pointer relative ${
                             isSelected 
-                            ? 'border-red-500 bg-red-50 shadow-md ring-1 ring-red-200' 
-                            : 'border-slate-200 hover:border-indigo-300 bg-slate-50/50'
+                            ? 'border-red-500 bg-red-900/20 shadow-md ring-1 ring-red-500' 
+                            : 'border-slate-600 hover:border-indigo-500 bg-slate-750'
                         }`}
                     >
                     <div className="flex justify-between items-start mb-2">
-                        <div className={`flex items-center space-x-2 ${isSelected ? 'text-red-600' : 'text-slate-600'}`}>
+                        <div className={`flex items-center space-x-2 ${isSelected ? 'text-red-400' : 'text-slate-300'}`}>
                         {getElementIcon(el.type)}
                         <span className="text-xs font-bold uppercase tracking-wide">{el.type}</span>
                         </div>
@@ -210,8 +210,8 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
                             e.stopPropagation();
                             handleDeleteElement(idx);
                         }}
-                        className="text-slate-400 hover:text-red-500 transition-colors p-1"
-                        title="Delete Element"
+                        className="text-slate-500 hover:text-red-400 transition-colors p-1"
+                        title="요소 삭제"
                         >
                         <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -223,27 +223,27 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
                             value={el.content || ''}
                             onChange={(e) => handleElementChange(idx, 'content', e.target.value)}
                             onFocus={() => setSelectedElementIndex(idx)}
-                            className="w-full text-sm border-slate-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[60px] p-2 bg-white"
-                            placeholder="Text content..."
+                            className="w-full text-sm border-slate-600 rounded-md shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 min-h-[60px] p-2 bg-slate-900 text-slate-200"
+                            placeholder="텍스트 내용..."
                         />
                         <div className="flex gap-2">
                             <div className="flex-1">
-                                <label className="text-[10px] text-slate-400 block mb-0.5">Size (pt)</label>
+                                <label className="text-[10px] text-slate-400 block mb-0.5">크기 (pt)</label>
                                 <input 
                                     type="number" 
                                     value={el.fontSize || 14}
                                     onChange={(e) => handleElementChange(idx, 'fontSize', parseInt(e.target.value))}
-                                    className="w-full text-xs border-slate-300 rounded px-2 py-1"
+                                    className="w-full text-xs border-slate-600 rounded px-2 py-1 bg-slate-900 text-slate-200"
                                 />
                             </div>
                             <div className="flex-1">
-                                <label className="text-[10px] text-slate-400 block mb-0.5">Color</label>
+                                <label className="text-[10px] text-slate-400 block mb-0.5">색상</label>
                                 <div className="flex items-center space-x-2">
                                     <input 
                                         type="color" 
                                         value={el.color?.startsWith('#') ? el.color : `#${el.color || '000000'}`}
                                         onChange={(e) => handleElementChange(idx, 'color', e.target.value)}
-                                        className="h-6 w-full p-0 border-0 rounded cursor-pointer"
+                                        className="h-6 w-full p-0 border-0 rounded cursor-pointer bg-slate-900"
                                     />
                                 </div>
                             </div>
@@ -252,14 +252,14 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
                     )}
 
                     {el.type === ElementType.Shape && (
-                        <div className="text-sm text-slate-500" onClick={e => e.stopPropagation()}>
+                        <div className="text-sm text-slate-400" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center gap-2 mb-2">
-                            <span className="text-xs w-10">Type:</span>
+                            <span className="text-xs w-10">타입:</span>
                             <select 
                                 value={el.shapeType || 'rect'}
                                 onChange={(e) => handleElementChange(idx, 'shapeType', e.target.value)}
                                 onFocus={() => setSelectedElementIndex(idx)}
-                                className="text-xs border-slate-300 rounded px-2 py-1 flex-1"
+                                className="text-xs border-slate-600 rounded px-2 py-1 flex-1 bg-slate-900 text-slate-200"
                             >
                                 <option value="rect">Rectangle</option>
                                 <option value="ellipse">Ellipse</option>
@@ -267,25 +267,25 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
                             </select>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs w-10">Fill:</span>
+                            <span className="text-xs w-10">채우기:</span>
                             <input 
                                 type="color" 
                                 value={el.bgColor?.startsWith('#') ? el.bgColor : `#${el.bgColor || 'CCCCCC'}`}
                                 onChange={(e) => handleElementChange(idx, 'bgColor', e.target.value)}
-                                className="h-6 flex-1 p-0 border-0 rounded cursor-pointer"
+                                className="h-6 flex-1 p-0 border-0 rounded cursor-pointer bg-slate-900"
                             />
                         </div>
                         </div>
                     )}
 
                     {el.type === ElementType.Image && (
-                        <div className="text-xs text-slate-500 bg-white/50 p-2 rounded border border-slate-200">
+                        <div className="text-xs text-slate-400 bg-slate-750 p-2 rounded border border-slate-600">
                            <div className="flex justify-between mb-1">
-                               <span>Position:</span>
+                               <span>위치:</span>
                                <span className="font-mono">{Math.round(el.x)}%, {Math.round(el.y)}%</span>
                            </div>
                            <div className="flex justify-between">
-                               <span>Size:</span>
+                               <span>크기:</span>
                                <span className="font-mono">{Math.round(el.w)}% x {Math.round(el.h)}%</span>
                            </div>
                         </div>
@@ -296,7 +296,7 @@ const SlidePreview: React.FC<SlidePreviewProps> = ({
               
               {currentSlide.elements.length === 0 && (
                 <div className="text-center py-8 text-slate-400 text-sm">
-                    No editable elements detected. 
+                    편집 가능한 요소가 없습니다.
                 </div>
               )}
             </div>

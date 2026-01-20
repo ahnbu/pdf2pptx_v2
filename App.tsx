@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FileText, Download, Wand2, RefreshCw, AlertCircle } from 'lucide-react';
+import { FileText, Download, WandSparkles, RefreshCw, AlertCircle } from 'lucide-react';
 import Dropzone from './components/Dropzone';
 import ProcessingStatus from './components/ProcessingStatus';
 import SlidePreview from './components/SlidePreview';
@@ -73,7 +73,7 @@ function App() {
       setState(prev => ({ 
         ...prev, 
         isProcessing: false, 
-        error: err.message || "An unexpected error occurred.",
+        error: err.message || "알 수 없는 오류가 발생했습니다.",
         progress: 0
       }));
     }
@@ -119,14 +119,14 @@ function App() {
             currentStep: 'done', 
             isProcessing: false, 
             progress: 100,
-            generatedFileName: `${folderName} (Saved to output folder)`
+            generatedFileName: `${folderName} (output 폴더에 저장됨)`
           }));
       } catch (err: any) {
         console.error(err);
         setState(prev => ({ 
             ...prev, 
             isProcessing: false, 
-            error: err.message || "Failed to generate or save PPTX file. (Make sure the save server is running)",
+            error: err.message || "PPTX 파일 생성 또는 저장 실패 (저장 서버 실행 여부를 확인하세요)",
         }));
       }
   };
@@ -136,22 +136,22 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 md:p-12 font-sans">
+    <div className="min-h-screen bg-slate-900 p-6 md:p-12 font-sans">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex justify-center mb-4">
-            <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-200">
-              <Wand2 className="w-8 h-8 text-white" />
+            <div className="bg-indigo-600 p-3 rounded-2xl shadow-lg shadow-indigo-900/50">
+              <WandSparkles className="w-8 h-8 text-white" />
             </div>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            PDF to Editable PowerPoint
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            PDF를 편집 가능한 PPTX로 변환
           </h1>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-            Convert your PDF slides back into editable PPTX format. 
-            AI separates text and shapes so you can edit the design, not just the background.
+          <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+            PDF 슬라이드를 편집 가능한 PPTX 형식으로 복원합니다.<br/>
+            AI가 텍스트와 도형을 분리하여 디자인 요소까지 편집할 수 있습니다.
           </p>
         </div>
 
@@ -164,21 +164,21 @@ function App() {
               <Dropzone onFileSelect={handleFileSelect} />
               
               {state.file && (
-                <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div className="bg-slate-800 p-4 rounded-xl border border-slate-700 shadow-sm flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="bg-red-50 p-2 rounded-lg">
                       <FileText className="w-6 h-6 text-red-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-slate-900">{state.file.name}</p>
-                      <p className="text-sm text-slate-500">{(state.file.size / 1024 / 1024).toFixed(2)} MB</p>
+                      <p className="font-medium text-white">{state.file.name}</p>
+                      <p className="text-sm text-slate-400">{(state.file.size / 1024 / 1024).toFixed(2)} MB</p>
                     </div>
                   </div>
                   <button
                     onClick={startConversion}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors flex items-center shadow-md hover:shadow-lg"
                   >
-                    Convert to PPTX
+                    PPTX로 변환하기
                   </button>
                 </div>
               )}
@@ -223,38 +223,39 @@ function App() {
 
           {/* Success Section */}
           {state.currentStep === 'done' && (
-            <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 text-center animate-fade-in max-w-2xl mx-auto">
+            <div className="bg-slate-800 rounded-2xl shadow-sm border border-slate-700 p-8 text-center animate-fade-in max-w-2xl mx-auto">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Download className="w-8 h-8 text-green-600" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">Conversion Complete!</h2>
-              <p className="text-slate-600 mb-8">
-                Your file "Converted_Presentation.pptx" has been downloaded.
+              <h2 className="text-2xl font-bold text-white mb-2">변환 완료!</h2>
+              <p className="text-slate-300 mb-8">
+                파일이 성공적으로 변환되었습니다.<br/>
+                <span className="text-sm text-slate-500">{state.generatedFileName}</span>
               </p>
               
               <button
                 onClick={reset}
-                className="inline-flex items-center justify-center space-x-2 text-slate-600 hover:text-indigo-600 font-medium transition-colors"
+                className="inline-flex items-center justify-center space-x-2 text-slate-300 hover:text-indigo-400 font-medium transition-colors"
               >
                 <RefreshCw className="w-4 h-4" />
-                <span>Convert another file</span>
+                <span>다른 파일 변환하기</span>
               </button>
             </div>
           )}
 
           {/* Error Section */}
           {state.error && (
-             <div className="bg-red-50 rounded-xl border border-red-100 p-6 text-center animate-fade-in max-w-2xl mx-auto">
-                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+             <div className="bg-red-900/20 rounded-xl border border-red-800 p-6 text-center animate-fade-in max-w-2xl mx-auto">
+                <div className="w-12 h-12 bg-red-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertCircle className="w-6 h-6 text-red-600" />
                 </div>
-                <h3 className="text-lg font-semibold text-red-900 mb-2">Conversion Failed</h3>
-                <p className="text-red-700 mb-6">{state.error}</p>
+                <h3 className="text-lg font-semibold text-red-300 mb-2">변환 실패</h3>
+                <p className="text-red-400 mb-6">{state.error}</p>
                 <button
                   onClick={reset}
-                  className="bg-white border border-red-200 text-red-700 hover:bg-red-50 px-6 py-2 rounded-lg font-medium transition-colors"
+                  className="bg-slate-800 border border-red-800 text-red-400 hover:bg-red-900/40 px-6 py-2 rounded-lg font-medium transition-colors"
                 >
-                  Try Again
+                  다시 시도
                 </button>
              </div>
           )}
@@ -262,7 +263,7 @@ function App() {
         </div>
 
         {/* Footer info */}
-        <div className="mt-12 text-center text-sm text-slate-400">
+        <div className="mt-12 text-center text-sm text-slate-500">
            <p>Powered by Gemini 3.0 flash & PPTXGenJS</p>
         </div>
       </div>

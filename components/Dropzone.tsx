@@ -16,7 +16,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ onFileSelect, disabled }) => {
         if (file.type === 'application/pdf') {
           onFileSelect(file);
         } else {
-          alert('Please upload a PDF file.');
+          alert('PDF 파일을 업로드해주세요.');
         }
       }
     },
@@ -35,7 +35,7 @@ const Dropzone: React.FC<DropzoneProps> = ({ onFileSelect, disabled }) => {
       onDrop={handleDrop}
       onDragOver={(e) => e.preventDefault()}
       className={`relative border-2 border-dashed rounded-xl p-10 text-center transition-all duration-200 
-        ${disabled ? 'opacity-50 cursor-not-allowed border-slate-300 bg-slate-50' : 'border-indigo-300 bg-indigo-50/50 hover:bg-indigo-50 hover:border-indigo-500 cursor-pointer'}
+        ${disabled ? 'opacity-50 cursor-not-allowed border-slate-700 bg-slate-800' : 'border-indigo-500 bg-slate-800/50 hover:bg-slate-800 hover:border-indigo-400 cursor-pointer'}
       `}
     >
       <input
@@ -46,15 +46,15 @@ const Dropzone: React.FC<DropzoneProps> = ({ onFileSelect, disabled }) => {
         disabled={disabled}
       />
       <div className="flex flex-col items-center justify-center space-y-4">
-        <div className={`p-4 rounded-full ${disabled ? 'bg-slate-200' : 'bg-indigo-100'}`}>
-          <UploadCloud className={`w-8 h-8 ${disabled ? 'text-slate-400' : 'text-indigo-600'}`} />
+        <div className={`p-4 rounded-full ${disabled ? 'bg-slate-700' : 'bg-indigo-900/50'}`}>
+          <UploadCloud className={`w-8 h-8 ${disabled ? 'text-slate-500' : 'text-indigo-400'}`} />
         </div>
         <div>
-          <p className="text-lg font-semibold text-slate-700">
-            Click to upload or drag & drop
+          <p className="text-lg font-semibold text-slate-200">
+            클릭하여 업로드하거나 드래그 앤 드롭하세요
           </p>
-          <p className="text-sm text-slate-500 mt-1">
-            PDF files only (max 20MB)
+          <p className="text-sm text-slate-400 mt-1">
+            PDF 파일만 가능 (최대 20MB)
           </p>
         </div>
       </div>

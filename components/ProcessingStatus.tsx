@@ -10,9 +10,9 @@ interface ProcessingStatusProps {
 }
 
 const steps: { id: string; label: string }[] = [
-  { id: 'pdf-convert', label: 'PDF Parsing' },
-  { id: 'ai-analysis', label: 'AI Layout Analysis' },
-  { id: 'pptx-gen', label: 'Generating PPTX' },
+  { id: 'pdf-convert', label: 'PDF 파싱' },
+  { id: 'ai-analysis', label: 'AI 레이아웃 분석' },
+  { id: 'pptx-gen', label: 'PPTX 생성 중' },
 ];
 
 const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
@@ -22,8 +22,8 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
   processedSlides,
 }) => {
   return (
-    <div className="w-full max-w-lg mx-auto bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-      <h3 className="text-lg font-semibold text-slate-800 mb-6">Converting Presentation</h3>
+    <div className="w-full max-w-lg mx-auto bg-slate-800 rounded-xl shadow-sm border border-slate-700 p-6">
+      <h3 className="text-lg font-semibold text-slate-100 mb-6">프레젠테이션 변환 중</h3>
       
       <div className="space-y-6">
         {steps.map((step, index) => {
@@ -42,12 +42,12 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
                         )}
                     </div>
                     <div className="flex-1">
-                        <p className={`text-sm font-medium ${isActive || isCompleted ? 'text-slate-900' : 'text-slate-500'}`}>
+                        <p className={`text-sm font-medium ${isActive || isCompleted ? 'text-slate-200' : 'text-slate-500'}`}>
                             {step.label}
                         </p>
                         {isActive && step.id === 'ai-analysis' && (
-                            <p className="text-xs text-slate-500 mt-1">
-                                Processing slide {processedSlides} of {totalSlides}...
+                            <p className="text-xs text-slate-400 mt-1">
+                                슬라이드 {processedSlides} / {totalSlides} 처리 중...
                             </p>
                         )}
                     </div>
@@ -57,11 +57,11 @@ const ProcessingStatus: React.FC<ProcessingStatusProps> = ({
       </div>
 
       <div className="mt-8">
-        <div className="flex justify-between text-xs text-slate-500 mb-2">
-            <span>Overall Progress</span>
+        <div className="flex justify-between text-xs text-slate-400 mb-2">
+            <span>전체 진행률</span>
             <span>{Math.round(progress)}%</span>
         </div>
-        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+        <div className="w-full bg-slate-700 rounded-full h-2 overflow-hidden">
             <div 
                 className="bg-indigo-600 h-2 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${progress}%` }}
