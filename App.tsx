@@ -141,6 +141,7 @@ function App() {
           }
           
           // Browser Download
+          const downloadName = state.file ? `${state.file.name.replace(/\.[^/.]+$/, "")}_변환.pptx` : `${folderName}.pptx`;
           const byteCharacters = atob(result.pptxBase64);
           const byteNumbers = new Array(byteCharacters.length);
           for (let i = 0; i < byteCharacters.length; i++) {
@@ -151,7 +152,7 @@ function App() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = `${folderName}.pptx`;
+          a.download = downloadName;
           document.body.appendChild(a);
           a.click();
           document.body.removeChild(a);
@@ -162,7 +163,7 @@ function App() {
             currentStep: 'done', 
             isProcessing: false, 
             progress: 100,
-            generatedFileName: `${folderName} (다운로드 완료)`
+            generatedFileName: `${downloadName} (다운로드 완료)`
           }));
       } catch (err: any) {
         console.error(err);
